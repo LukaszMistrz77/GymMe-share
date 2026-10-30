@@ -67,9 +67,12 @@
   <a id="have" class="link" href="#" hidden data-pl="Mam już aplikację — otwórz" data-en="I already have the app — open it">Mam już aplikację — otwórz</a>
 </main>
 <script>
-  var PACKAGE = 'com.lukasz77.gymapp';
-  var SCHEME = 'gymapp';
-  var token = (new URLSearchParams(location.search).get('t') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 64);
+  var params = new URLSearchParams(location.search);
+  var token = (params.get('t') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 64);
+  // v=dev: a link made by the development build of the app (for testing); it opens that build instead of the Play Store one.
+  var isDev = params.get('v') === 'dev';
+  var PACKAGE = isDev ? 'com.lukasz77.gymapp.dev' : 'com.lukasz77.gymapp';
+  var SCHEME = isDev ? 'gymappdev' : 'gymapp';
 
   // The Play Store page of the app; the token travels as the install referrer, so the app can open the plan right after installing.
   var storeUrl = 'https://play.google.com/store/apps/details?id=' + PACKAGE +
