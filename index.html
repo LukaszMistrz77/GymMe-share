@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Plan treningowy w GymMe</title>
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --card: #1b1a17;
+    --text: #f4efe6;
+    --muted: #a9a294;
+    --gold: #e9c46a;
+    --gold-dark: #8a6a1f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px 22px;
+    display: grid;
+    gap: 16px;
+    text-align: center;
+  }
+  h1 { margin: 0; font-size: 24px; line-height: 1.25; color: var(--gold); text-wrap: balance; }
+  p { margin: 0; color: var(--muted); line-height: 1.5; }
+  a.button {
+    display: block;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--gold);
+    background: #000;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+  }
+  a.button.secondary { border-color: var(--gold-dark); font-weight: 600; }
+  a.button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  small { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1 data-pl="Ktoś udostępnił Ci plan treningowy" data-en="Someone shared a training plan with you">Ktoś udostępnił Ci plan treningowy</h1>
+  <p data-pl="Otwórz go w aplikacji GymMe i dodaj do swoich planów." data-en="Open it in the GymMe app and add it to your plans.">Otwórz go w aplikacji GymMe i dodaj do swoich planów.</p>
+  <a id="open" class="button" href="#" data-pl="Otwórz w aplikacji" data-en="Open in the app">Otwórz w aplikacji</a>
+  <a id="store" class="button secondary" href="#" data-pl="Nie mam aplikacji — pobierz z Google Play" data-en="I don't have the app — get it on Google Play">Nie mam aplikacji — pobierz z Google Play</a>
+  <small data-pl="Aplikacja GymMe jest na telefony z Androidem." data-en="The GymMe app is for Android phones.">Aplikacja GymMe jest na telefony z Androidem.</small>
+</main>
+<script>
+  var PACKAGE = 'com.lukasz77.gymapp';
+  var SCHEME = 'gymapp';
+  var token = (new URLSearchParams(location.search).get('t') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 64);
+
+  // Google Play opens the app store page; the token travels as the install referrer, so the app can open the plan right after installing.
+  var storeUrl = 'https://play.google.com/store/apps/details?id=' + PACKAGE +
+    (token ? '&referrer=' + encodeURIComponent('share=' + token) : '');
+  document.getElementById('store').href = storeUrl;
+
+  // An Android "intent" link: opens the app at the shared plan, or Google Play when the app is not installed.
+  var openLink = token
+    ? 'intent://share/' + token + '#Intent;scheme=' + SCHEME + ';package=' + PACKAGE +
+      ';S.browser_fallback_url=' + encodeURIComponent(storeUrl) + ';end'
+    : storeUrl;
+  document.getElementById('open').href = openLink;
+
+  if ((navigator.language || '').toLowerCase().indexOf('pl') !== 0) {
+    document.documentElement.lang = 'en';
+    document.querySelectorAll('[data-en]').forEach(function (el) { el.textContent = el.getAttribute('data-en'); });
+    document.title = 'Training plan in GymMe';
+  }
+</script>
+</body>
+</html>
