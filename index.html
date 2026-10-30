@@ -51,6 +51,7 @@
   }
   a.button:focus-visible, a.link:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   a.link { color: var(--muted); font-size: 14px; }
+  small { color: var(--muted); }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -65,6 +66,10 @@
   <!-- The app did not open: the app is most likely not installed. -->
   <a id="store" class="button" href="#" hidden data-pl="Pobierz w Sklep Play" data-en="Get it on the Play Store">Pobierz w Sklep Play</a>
   <a id="have" class="link" href="#" hidden data-pl="Mam już aplikację — otwórz" data-en="I already have the app — open it">Mam już aplikację — otwórz</a>
+
+  <!-- Always shown: an app from before sharing existed cannot open a shared plan and must be updated. -->
+  <p><small data-pl="Link nie działa albo aplikacja nie pokazuje planu? Zaktualizuj GymMe w Sklep Play." data-en="The link does not work or the app does not show the plan? Update GymMe on the Play Store.">Link nie działa albo aplikacja nie pokazuje planu? Zaktualizuj GymMe w Sklep Play.</small></p>
+  <a id="update" class="link" href="#" data-pl="Zaktualizuj aplikację" data-en="Update the app">Zaktualizuj aplikację</a>
 </main>
 <script>
   var params = new URLSearchParams(location.search);
@@ -72,7 +77,9 @@
   // v=dev: a link made by the development build of the app (for testing); it opens that build instead of the Play Store one.
   var isDev = params.get('v') === 'dev';
   var PACKAGE = isDev ? 'com.lukasz77.gymapp.dev' : 'com.lukasz77.gymapp';
-  var SCHEME = isDev ? 'gymappdev' : 'gymapp';
+  // Not 'gymapp': versions of the app from before sharing existed answer to that one but have no screen for a shared plan. Only the
+  // versions that know sharing also register 'gymmeshare', so for an old app the intent fails and Chrome goes to the Play Store.
+  var SCHEME = isDev ? 'gymappdev' : 'gymmeshare';
 
   // The Play Store page of the app; the token travels as the install referrer, so the app can open the plan right after installing.
   var storeUrl = 'https://play.google.com/store/apps/details?id=' + PACKAGE +
@@ -92,6 +99,7 @@
   el('open').href = openLink;
   el('have').href = openLink;
   el('store').href = storeUrl;
+  el('update').href = storeUrl;
 
   if ((navigator.language || '').toLowerCase().indexOf('pl') !== 0) {
     document.documentElement.lang = 'en';
