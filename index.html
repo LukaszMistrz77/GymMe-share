@@ -80,10 +80,13 @@
 
   // An Android "intent" link: opens the app at the shared plan, and when the app is not installed Chrome follows the fallback to the
   // Play Store by itself.
-  var openLink = token
-    ? 'intent://share/' + token + '#Intent;scheme=' + SCHEME + ';package=' + PACKAGE +
-      ';S.browser_fallback_url=' + encodeURIComponent(storeUrl) + ';end'
-    : storeUrl;
+  // (The development build is not on the Play Store, so for v=dev the app's own address is opened directly and nothing redirects.)
+  var openLink = !token
+    ? storeUrl
+    : isDev
+      ? SCHEME + '://share/' + token
+      : 'intent://share/' + token + '#Intent;scheme=' + SCHEME + ';package=' + PACKAGE +
+        ';S.browser_fallback_url=' + encodeURIComponent(storeUrl) + ';end';
 
   var el = function (id) { return document.getElementById(id); };
   el('open').href = openLink;
